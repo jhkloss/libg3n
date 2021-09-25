@@ -1,11 +1,6 @@
-import os
-
 import libg3n
-from libg3n.model.libg3n_file import Libg3nFile
 from libg3n.model.libg3n_library import Libg3nLibrary
-from libg3n.modules.python.python_function_visitor import PythonFunctionVisitor
-from libg3n.modules.python.python_library import Library
-from .configuration import Configuration
+from libg3n.model.libg3n_config import Libg3nConfig
 
 
 # Singleton
@@ -13,7 +8,7 @@ class Generator:
 
     _output_directory: str = "./generated/"
 
-    def generate(self, library: Libg3nLibrary, config: Configuration):
+    def generate(self, library: Libg3nLibrary, config: Libg3nConfig):
 
         libg3n.logger.debug('Initiated library generation from ' + library.path)
 
@@ -42,10 +37,10 @@ class Generator:
         # Build classes
         for current_class in config.classes.values():
             code = current_class.to_code()
-            libg3n.logger.debug('Unparse class to: ' + self.__output_directory + 'class_' + current_class.name)
+            libg3n.logger.debug('Unparse class to: ' + self._output_directory + 'class_' + current_class.name)
             self.write_file('class_' + current_class.name + '.py', code)
 
     def write_file(self, file_name: str, content: str):
         # Write the code back to python file
-        with open(self.__output_directory + file_name, 'w', encoding='utf-8') as f:
+        with open(self._output_directory + file_name, 'w', encoding='utf-8') as f:
             f.write(content)

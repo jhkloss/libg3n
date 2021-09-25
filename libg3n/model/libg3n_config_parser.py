@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
+from os.path import exists
 import xml.etree.ElementTree as et
 
+import libg3n
 from libg3n.model.libg3n_function import FunctionType
 from libg3n.model.libg3n_function import Libg3nFunction
 from libg3n.model.libg3n_class import Libg3nClass
@@ -22,7 +24,6 @@ class Libg3nConfigParser(ABC):
     def load_file(self, path):
         if exists(path):
             self._config_tree = et.ElementTree(file=path)
-
 
     def get_functions(self):
         # We use the python hashtable (dict) to quickly access the right functions later
@@ -67,9 +68,9 @@ class Libg3nConfigParser(ABC):
     # Dumps the parsed tree for debuging purposes.
     def dump_tree(self):
 
-        funcs = self.current_tree.findall('func')
+        funcs = self._config_tree.findall('func')
 
-        print(('Functions').center(40, '-'))
+        print('Functions'.center(40, '-'))
 
         for func in funcs:
             id = func.find('id').text

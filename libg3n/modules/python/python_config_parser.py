@@ -1,7 +1,10 @@
 from libg3n.model.libg3n_config_parser import Libg3nConfigParser
+from libg3n.model.libg3n_function import Libg3nFunction
+from libg3n.model.libg3n_class import Libg3nClass
 from libg3n.modules.python.python_function import PythonFunction
 from libg3n.modules.python.python_property import PythonProperty
 from libg3n.modules.python.python_class import PythonClass
+
 
 class PythonConfigParser(Libg3nConfigParser):
 
@@ -21,13 +24,12 @@ class PythonConfigParser(Libg3nConfigParser):
 
         return PythonFunction(id, function_type, value)
 
-
     def process_class(self, class_element) -> Libg3nClass:
 
         new_class = PythonClass()
 
-        new_class.name = current_class.find('name').text
-        new_class.meta_class = current_class.find('metaclass').text
+        new_class.name = class_element.find('name').text
+        new_class.meta_class = class_element.find('metaclass').text
 
         properties = class_element.findall('property')
 

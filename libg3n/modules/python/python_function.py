@@ -9,7 +9,7 @@ class PythonFunction(Libg3nFunction):
 
     def __custom_function_body(self) -> any:
         # TODO: Validate body
-        return ast.parse(self.__value).__getattribute__('body')
+        return ast.parse(self._value).__getattribute__('body')
 
     def __external_function_body(self) -> any:
         with open(self._value) as f:

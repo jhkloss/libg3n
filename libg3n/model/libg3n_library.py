@@ -1,5 +1,8 @@
+import glob
+import libg3n
 from abc import ABC, abstractmethod
 from .libg3n_file import Libg3nFile
+
 
 class Libg3nLibrary(ABC):
     _files = []
@@ -36,7 +39,7 @@ class Libg3nLibrary(ABC):
 
     def scan(self):
         libg3n.logger.debug('Started library scan')
-        for file in glob.iglob(self.__path + '/**/*.' + self.file_extension, recursive=True):
+        for file in glob.iglob(self._path + '/**/*.' + self.file_extension, recursive=True):
             current_file = self.index_file(file)
-            self.__files.append(current_file)
-            self.__number_of_files += 1
+            self._files.append(current_file)
+            self._number_of_files += 1

@@ -1,3 +1,4 @@
+import libg3n
 from abc import ABC, abstractmethod
 from enum import IntEnum, unique, auto
 
@@ -6,12 +7,15 @@ from enum import IntEnum, unique, auto
 
 # Define the function types as enum. We start at zero so we can use the LENGTH member to get the number of types without
 # an additonal function call.
+
+
 @unique
 class FunctionType(IntEnum):
     RETURN = auto()
     CUSTOM = auto()
     EXTERNAL = auto()
     LENGTH = auto()
+
 
 class Libg3nFunction(ABC):
     _ident: str

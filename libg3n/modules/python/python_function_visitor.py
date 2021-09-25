@@ -1,15 +1,17 @@
 import ast
-from libg3n.modules.python.python_file import File
+import libg3n
+import python_decorators
+from libg3n.modules.python.python_file import PythonFile
 
 
 class PythonFunctionVisitor(ast.NodeVisitor):
     __loaded_functions: dict
-    __current_file: File
+    __current_file: PythonFile
 
     def load_functions(self, functions: dict):
         self.__loaded_functions = functions
 
-    def set_current_file(self, file: File):
+    def set_current_file(self, file: PythonFile):
         self.__current_file = file
 
     def __get_function_by_ident(self, ident: str):
@@ -43,9 +45,9 @@ class PythonFunctionVisitor(ast.NodeVisitor):
             # Confirm decorator structure
             if isinstance(decorator, ast.Call):
                 # Get decorator name
-                decorator_name: str = get_decorator_id(decorator)
+                decorator_name: str = self._get_decorator_id(decorator)
                 # Check if decorator is used by libg3n
-                if decorator_name and is_libg3n_decorator(decorator_name):
+                if decorator_name and self._is_libg3n_decorator(decorator_name):
 
                     libg3n.logger.debug(
                         'Found libg3n decorator in ' + self.__current_file.path + ' in line ' + str(node.lineno - 1))
@@ -57,7 +59,8 @@ class PythonFunctionVisitor(ast.NodeVisitor):
 
                         self.__refactor_function(ident, node)
 
-    def get_decorator_id(decorator: ast.Call):
+    @staticmethod
+    def _get_decorator_id(decorator: ast.Call):
         decorator_id: str = ''
 
         # Get decorator name
@@ -70,10 +73,11 @@ class PythonFunctionVisitor(ast.NodeVisitor):
         return decorator_id
 
     # Check if decorator is used by libg3n
-    def is_libg3n_decorator(identifier: str):
+    @staticmethod
+    def _is_libg3n_decorator(identifier: str):
         found = False
         # TODO: Make this dynamic
-        if identifier == decorators.generate.__name__:
+        if identifier == python_decorators.generate.__name__:
             found = True
 
         return found

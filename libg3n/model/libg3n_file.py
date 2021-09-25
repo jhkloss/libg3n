@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod, abstractproperty
 from os.path import exists, basename, splitext
-from libg3n.configuration import Configuration
 
 
 class Libg3nFile(ABC):
@@ -48,7 +47,7 @@ class Libg3nFile(ABC):
 
     @property
     def file_name(self):
-        name_with_ext = basename(file.path)
+        name_with_ext = basename(self._path)
         return splitext(name_with_ext)
 
     def touch(self):
@@ -66,7 +65,7 @@ class Libg3nFile(ABC):
         pass
 
     @abstractmethod
-    def unparse(self):
+    def unparse(self) -> str:
         pass
 
     def read(self) -> str:
@@ -78,11 +77,13 @@ class Libg3nFile(ABC):
 
         return file_content
 
-    def write(self, file_path: str, file_name: str = self.file_name, encoding: str = ""):
-        file_encoding = self._encoding
+    def write(self, file_path: str, file_name: str = "", encoding: str = ""):
 
-        if encoding:
-            file_encoding = encoding
+        if not encoding:
+            encoding = self._encoding
 
-        with open(file_path + file_name + '.' + self.file_extension, 'w', encoding=file_encoding) as f:
+        if not file_name:
+            file_name = self.file_name
+
+        with open(file_path + file_name + '.' + self.file_extension, 'w', encoding=encoding) as f:
             f.write(self._code)
