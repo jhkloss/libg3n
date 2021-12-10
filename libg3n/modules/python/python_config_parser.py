@@ -16,9 +16,9 @@ class PythonConfigParser(Libg3nConfigParser):
     }
 
     def process_function(self, function_element) -> Libg3nFunction:
-        id = function_element.find('id').text
-        type = function_element.find('type').text
-        value = function_element.find('value').text
+        id = function_element[1]
+        type = function_element[3]
+        value = function_element[4]
 
         function_type = self._parse_function_type(type)
 
@@ -28,17 +28,17 @@ class PythonConfigParser(Libg3nConfigParser):
 
         new_class = PythonClass()
 
-        new_class.name = class_element.find('name').text
-        new_class.meta_class = class_element.find('metaclass').text
+        new_class.name = class_element[0]
 
-        properties = class_element.findall('property')
+        if class_element[2] in self.SYMBOLS:
+            new_class.meta_class = class_element[3]
 
-        property_dict = {}
-
-        for current_property in properties:
-            new_property = PythonProperty()
-            new_property.name = current_property.find('name').text
-            new_property.value = self.PROPERTY_TYPE_CONSTANTS[current_property.find('type').text]
-            new_class.add_property(new_property)
+        for i, token in enumerate(class_element):
+            if token == self.PROPERTY_KEYWORD:
+                new_property = PythonProperty()
+                new_property.name = token[i + 1]
+                new_property.type = token[i + 3]
+                new_property.value = self.PROPERTY_TYPE_CONSTANTS[new_property.type]
+                new_class.add_property(new_property)
 
         return new_class

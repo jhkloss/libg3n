@@ -15,7 +15,7 @@ class Generator:
         # Perform the library scan
         library.scan()
 
-        libg3n.logger.debug('Found ' + str(library.number_of_files) + ' python files in the library')
+        libg3n.logger.debug('Found ' + str(library.number_of_files) + ' matching files in the library')
 
         # Traverse through library files
         for file in library.files:
