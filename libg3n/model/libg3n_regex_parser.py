@@ -6,7 +6,7 @@ import re
 from libg3n.exception.InvalidFileException import InvalidFileException
 from libg3n.exception.InvalidParsingSyntaxException import InvalidParsingSyntaxException
 
-
+# TODO: Inherit from normal Config parser
 class Libg3nRegexParser(ABC):
 
     class RegexGroupNames(StrEnum):
@@ -30,22 +30,22 @@ class Libg3nRegexParser(ABC):
         return 'Generate'
 
     @property
+    def regex_annotation_param_name(self) -> str:
+        return 'ident'
+
+    @property
+    def regex_annotation_param(self) -> str:
+        return r'.+'
+
+    @property
     def regex_annotation(self) -> str:
         """
         Prebuilds the annotation regex with use of the predefined parts.
         """
-        return self.regex_annotation_symbol + self.regex_annotation_name + '(' + self.regex_spacer + '=' \
-               + self.regex_spacer + self._add_regex_group(self.regex_param, self.RegexGroupNames.IDENT) + ')'
-
-    @property
-    @abstractmethod
-    def regex_name(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def regex_param(self) -> str:
-        pass
+        return self.regex_annotation_symbol + self.regex_annotation_name + '(' + self.regex_annotation_param_name + self.regex_spacer + '=' \
+               + self.regex_spacer + '"|\'' \
+               + self._add_regex_group(self.regex_annotation_param, self.RegexGroupNames.IDENT) + '"|\'' \
+               + self.regex_spacer + ')'
 
     @property
     @abstractmethod
@@ -89,6 +89,18 @@ class Libg3nRegexParser(ABC):
         Adds the group syntax to any regex string. The group name is defined by the group_name parameter.
         """
         return f'(?P<{group_name}>' + regex + ')'
+
+    @staticmethod
+    def glue_regex_token_list(token_list: list) -> str:
+        result = ''
+        length = len(token_list) - 1
+
+        for i, token in enumerate(token_list):
+            result += token
+            if i < length:
+                result += '|'
+
+        return '({result})'.format(result=result)
 
     def parse_file(self, file_path: str) -> dict:
         """
