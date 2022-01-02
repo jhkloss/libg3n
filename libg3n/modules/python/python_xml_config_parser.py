@@ -33,8 +33,6 @@ class PythonConfigParser(Libg3nXMLConfigParser):
 
         properties = class_element.findall('property')
 
-        property_dict = {}
-
         for current_property in properties:
             new_property = PythonProperty()
             new_property.name = current_property.find('name').text

@@ -1,6 +1,7 @@
 import ast
 from libg3n.model.libg3n_function import Libg3nFunction
 
+
 class PythonFunction(Libg3nFunction):
 
     def __return_function_body(self) -> any:

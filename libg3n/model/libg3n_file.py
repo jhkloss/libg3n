@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod, abstractproperty
 from os.path import exists, basename, splitext
 
+from libg3n.model.libg3n_config import Libg3nConfig
+
 
 class Libg3nFile(ABC):
     _path: str
@@ -61,7 +63,7 @@ class Libg3nFile(ABC):
         pass
 
     @abstractmethod
-    def process(self, config: Configuration):
+    def process(self, config: Libg3nConfig):
         pass
 
     @abstractmethod

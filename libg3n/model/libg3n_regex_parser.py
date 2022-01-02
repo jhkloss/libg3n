@@ -6,6 +6,7 @@ import re
 from libg3n.exception.InvalidFileException import InvalidFileException
 from libg3n.exception.InvalidParsingSyntaxException import InvalidParsingSyntaxException
 
+
 # TODO: Inherit from normal Config parser
 class Libg3nRegexParser(ABC):
 
