@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from libg3n.model.libg3n_config_parser import Libg3nConfigParser
 
 
 class Libg3nConfig(ABC):
@@ -7,10 +8,15 @@ class Libg3nConfig(ABC):
     _classes = {}
 
     def __init__(self, path):
+        # Preserve Path
         self._path = path
-        self.parser.load_file(path)
-        self._functions = self.parser.get_functions()
-        self._classes = self.parser.get_classes()
+
+        # Use the parser to parse the file and extract functions and classes from it
+        token_dict = self.parser.parse(path)
+
+        # Save the parsed result, seperated into functions and classes
+        _functions = token_dict[self.parser.FUNCTION_DICT_KEY]
+        _classes = token_dict[self.parser.CLASS_DICT_KEY]
 
     @property
     def functions(self):
@@ -22,5 +28,5 @@ class Libg3nConfig(ABC):
 
     @property
     @abstractmethod
-    def parser(self):
+    def parser(self) -> Libg3nConfigParser:
         pass

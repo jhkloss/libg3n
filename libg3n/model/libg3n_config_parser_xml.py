@@ -1,37 +1,41 @@
-from abc import ABC, abstractmethod
-from os.path import exists
+from abc import abstractmethod
 import xml.etree.ElementTree as et
 
-import libg3n
-from libg3n.model.libg3n_function import FunctionType
+from libg3n.model.libg3n_config_parser import Libg3nConfigParser
 from libg3n.model.libg3n_function import Libg3nFunction
 from libg3n.model.libg3n_class import Libg3nClass
 
 
-class Libg3nXMLConfigParser(ABC):
+class Libg3nXMLConfigParser(Libg3nConfigParser):
 
     # Current XML file tree
     _config_tree: et.ElementTree
 
-    FUNCTION_TYPES = {
-        'Return': FunctionType.RETURN,
-        'Value': FunctionType.VALUE,
-        'Custom': FunctionType.CUSTOM,
-        'External': FunctionType.EXTERNAL,
-    }
+    def parse(self, path: str) -> dict:
+        # Load the XML file
+        self._load_file(path)
 
-    # Loads an config xml file and extracts the element tree.
-    def load_file(self, path):
-        if exists(path):
-            self._config_tree = et.ElementTree(file=path)
+        # Extract the XML ElementTree
+        self.extract_config_tree()
+
+        # Extract functions and classes from the ElementTree
+        result = {self.FUNCTION_DICT_KEY: self.get_functions(), self.CLASS_DICT_KEY: self.get_classes()}
+
+        # Return the dict with functions and classes
+        return result
+
+    def extract_config_tree(self):
+        self._config_tree = et.ElementTree(file=self._path)
 
     def get_functions(self):
         # We use the python hashtable (dict) to quickly access the right functions later
         function_dict = {}
         functions = self._config_tree.findall('func')
 
+        # Assertion in case we encounter a duplicate function ID
         assert id not in function_dict, 'Encountered duplicate function id!'
 
+        # Iterate over the functions and turn them into Libg3n functions
         for function in functions:
             new_function = self.process_function(function)
             function_dict[new_function.ident] = new_function
@@ -49,23 +53,7 @@ class Libg3nXMLConfigParser(ABC):
 
         return classes_dict
 
-    def _parse_function_type(self, function_type_string) -> FunctionType:
-        function_type = FunctionType.RETURN
-
-        if function_type_string == 'Return':
-            function_type = FunctionType.RETURN
-        elif function_type_string == 'Value':
-            function_type = FunctionType.VALUE
-        elif function_type_string == 'Custom':
-            function_type = FunctionType.CUSTOM
-        elif function_type_string == 'External':
-            function_type = FunctionType.EXTERNAL
-        else:
-            libg3n.logger.error('Config Parse: Invalid function type was specified')
-
-        return function_type
-
-    # Dumps the parsed tree for debuging purposes.
+    # Dumps the parsed tree for debugging purposes.
     def dump_tree(self):
 
         funcs = self._config_tree.findall('func')

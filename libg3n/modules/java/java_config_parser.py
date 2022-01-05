@@ -1,13 +1,13 @@
 import libg3n
 from libg3n.model.libg3n_class import Libg3nClass
-from libg3n.model.libg3n_config_parser import Libg3nConfigParser
+from libg3n.model.libg3n_config_parser_g3n import Libg3nConfigParserG3n
 from libg3n.model.libg3n_function import Libg3nFunction
 from libg3n.modules.java.java_function import JavaFunction
 from libg3n.modules.java.java_class import JavaClass
 from libg3n.modules.java.java_property import JavaProperty
 
 
-class JavaConfigParser(Libg3nConfigParser):
+class JavaConfigParser(Libg3nConfigParserG3n):
 
     PROPERTY_TYPE_CONSTANTS = {
         'String': '',

@@ -1,4 +1,4 @@
-from libg3n.model.libg3n_config_parser import Libg3nConfigParser
+from libg3n.model.libg3n_config_parser_g3n import Libg3nConfigParserG3n
 from libg3n.model.libg3n_function import Libg3nFunction
 from libg3n.model.libg3n_class import Libg3nClass
 from libg3n.modules.python.python_function import PythonFunction
@@ -6,7 +6,7 @@ from libg3n.modules.python.python_property import PythonProperty
 from libg3n.modules.python.python_class import PythonClass
 
 
-class PythonConfigParser(Libg3nConfigParser):
+class PythonConfigParser(Libg3nConfigParserG3n):
 
     PROPERTY_TYPE_CONSTANTS = {
         'str': '',

@@ -6,6 +6,12 @@ from libg3n.modules.python.python_codegen import to_source
 
 class PythonClass(Libg3nClass):
 
+    def glue_properties(self):
+        result = []
+        for property in self._properties.values():
+            result.append(property.to_ast())
+        return result
+
     def to_ast(self):
         class_definition = ast.ClassDef(self._name, decorator_list=[], bases=[])
         # Add Meta class

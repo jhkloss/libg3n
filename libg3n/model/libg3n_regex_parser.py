@@ -10,13 +10,15 @@ from libg3n.exception.InvalidParsingSyntaxException import InvalidParsingSyntaxE
 # TODO: Inherit from normal Config parser
 class Libg3nRegexParser(ABC):
 
-    class RegexGroupNames(StrEnum):
+    class GroupNames(StrEnum):
         NAME = 'name'
         IDENT = 'ident'
         PARAMETER = 'pram'
         MODIFICATOR = 'mod'
         TYPE = 'type'
         SIGNATURE = 'sig'
+        LINE_START = 'line_start'
+        LINE_END = 'line_end'
 
     @property
     def regex_spacer(self) -> str:
@@ -45,7 +47,7 @@ class Libg3nRegexParser(ABC):
         """
         return self.regex_annotation_symbol + self.regex_annotation_name + '(' + self.regex_annotation_param_name + self.regex_spacer + '=' \
                + self.regex_spacer + '"|\'' \
-               + self._add_regex_group(self.regex_annotation_param, self.RegexGroupNames.IDENT) + '"|\'' \
+               + self._add_regex_group(self.regex_annotation_param, self.GroupNames.IDENT) + '"|\'' \
                + self.regex_spacer + ')'
 
     @property
@@ -119,8 +121,17 @@ class Libg3nRegexParser(ABC):
 
         if self.syntax_check(code):
             for match in re.finditer(self.regex_string, code):
+                # Get regex group_dict for the match
                 match_groups = match.groupdict()
-                result[match_groups[self.RegexGroupNames.IDENT]] = match_groups
+
+                # Add positional metadata to the match
+                match_groups[self.GroupNames.LINE_START] = match.pos
+                match_groups[self.GroupNames.LINE_END] = match.endpos
+
+                # Save the result
+                result[match_groups[self.GroupNames.IDENT]] = match_groups
+
+            # Return the result
             return result
         else:
             raise InvalidParsingSyntaxException()

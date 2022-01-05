@@ -20,7 +20,3 @@ class Libg3nProperty(ABC):
     @value.setter
     def value(self, value: any):
         self._value = value
-
-    @abstractmethod
-    def to_ast(self):
-        pass

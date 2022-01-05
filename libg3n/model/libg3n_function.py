@@ -40,7 +40,7 @@ class Libg3nFunction(ABC):
         return self._function_type
 
     @function_type.setter
-    def type(self, function_type: FunctionType):
+    def function_type(self, function_type: FunctionType):
         self._function_type = function_type
 
     @property

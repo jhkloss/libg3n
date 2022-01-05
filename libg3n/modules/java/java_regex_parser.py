@@ -12,7 +12,7 @@ class JavaRegexParser(Libg3nRegexParser):
         glued_java_mod_token = self.glue_regex_token_list(java_mod_token)
 
         # Add group and return
-        return self._add_regex_group(glued_java_mod_token, self.RegexGroupNames.MODIFICATOR)
+        return self._add_regex_group(glued_java_mod_token, self.GroupNames.MODIFICATOR)
 
     @property
     def regex_type(self) -> str:
@@ -23,11 +23,11 @@ class JavaRegexParser(Libg3nRegexParser):
         glued_java_primitive_types = self.glue_regex_token_list(java_primitive_types)
 
         # Add group and return
-        return self._add_regex_group(glued_java_primitive_types, self.RegexGroupNames.TYPE)
+        return self._add_regex_group(glued_java_primitive_types, self.GroupNames.TYPE)
 
     @property
     def regex_sig(self) -> str:
-        return self._add_regex_group(r'\w+\(.*\)', self.RegexGroupNames.SIGNATURE)
+        return self._add_regex_group(r'\w+\(.*\)', self.GroupNames.SIGNATURE)
 
     @property
     def regex_string(self) -> str:

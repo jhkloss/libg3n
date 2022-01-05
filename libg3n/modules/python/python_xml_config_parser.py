@@ -1,4 +1,4 @@
-from libg3n.model.libg3n_xml_config_parser import Libg3nXMLConfigParser
+from libg3n.model.libg3n_config_parser_xml import Libg3nXMLConfigParser
 from libg3n.model.libg3n_function import Libg3nFunction
 from libg3n.model.libg3n_class import Libg3nClass
 from libg3n.modules.python.python_function import PythonFunction

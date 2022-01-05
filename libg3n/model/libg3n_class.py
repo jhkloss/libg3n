@@ -36,16 +36,6 @@ class Libg3nClass(ABC):
             result = self._properties[name]
         return result
 
-    def glue_properties(self):
-        result = []
-        for property in self._properties.values():
-            result.append(property.to_ast())
-        return result
-
-    @abstractmethod
-    def to_ast(self):
-        pass
-
     @abstractmethod
     def to_code(self):
         pass
