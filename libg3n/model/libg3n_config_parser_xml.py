@@ -1,6 +1,7 @@
 from abc import abstractmethod
 import xml.etree.ElementTree as et
 
+import libg3n
 from libg3n.model.libg3n_config_parser import Libg3nConfigParser
 from libg3n.model.libg3n_function import Libg3nFunction
 from libg3n.model.libg3n_class import Libg3nClass
@@ -14,6 +15,8 @@ class Libg3nXMLConfigParser(Libg3nConfigParser):
     def parse(self, path: str) -> dict:
         # Load the XML file
         self._load_file(path)
+
+        libg3n.logger.debug('Parsing config file: ' + path)
 
         # Extract the XML ElementTree
         self.extract_config_tree()
@@ -31,6 +34,8 @@ class Libg3nXMLConfigParser(Libg3nConfigParser):
         # We use the python hashtable (dict) to quickly access the right functions later
         function_dict = {}
         functions = self._config_tree.findall('func')
+
+        libg3n.logger.debug('Found ' + str(len(functions)) + ' functions specified by the config file')
 
         # Assertion in case we encounter a duplicate function ID
         assert id not in function_dict, 'Encountered duplicate function id!'

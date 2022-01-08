@@ -9,7 +9,7 @@ class Libg3nConfigParser(ABC):
     _path = ''
     _config = ''
 
-    FUNCTION_DICT_KEY = 'function'
+    FUNCTION_DICT_KEY = 'functions'
     CLASS_DICT_KEY = 'class'
 
     FUNCTION_TYPES = {

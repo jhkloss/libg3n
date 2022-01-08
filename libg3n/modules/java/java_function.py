@@ -8,28 +8,18 @@ from libg3n.exception.EmptyFileException import EmptyFileException
 
 class JavaFunction(Libg3nFunction):
 
-    _start_line: int
-    _end_line: int
+    _match: dict = {}
+    _matched: bool = False
 
-    _match: dict
+    FUNCTION_TEMPLATE = '{mod} {type} {sig} {{\n {code} \n}}'
 
-    FUNCTION_TEMPLATE = '{mod} {type} {sig}\n{\n {code} \n}'
-
-    @property
     def start_line(self) -> int:
-        return self._start_line
+        if self._matched:
+            return self._match[Libg3nRegexParser.GroupNames.LINE_START]
 
-    @property
     def end_line(self) -> int:
-        return self._end_line
-
-    @start_line.setter
-    def start_line(self, start_line: int):
-        self._start_line = start_line
-
-    @end_line.setter
-    def end_line(self, end_line: int):
-        self._end_line = end_line
+        if self._matched:
+            return self._match[Libg3nRegexParser.GroupNames.LINE_END]
 
     @property
     def match(self) -> dict:
@@ -37,15 +27,23 @@ class JavaFunction(Libg3nFunction):
 
     @match.setter
     def match(self, match: dict):
+        # Save the match
         self._match = match
+
+        # Mark this function as matched
+        self._matched = True
+
+    @property
+    def matched(self):
+        return self._matched
 
     def matches(self, match: dict, ident_key: str = 'ident') -> bool:
         return match[ident_key] == self.ident
 
     def _prepare_value(self):
-        if isinstance(self.value, str):
+        if self.match[Libg3nRegexParser.GroupNames.TYPE] == 'String':
             return '"{value}"'.format(value=self.value)
-        elif isinstance(self.value, bool):
+        elif self.match[Libg3nRegexParser.GroupNames.TYPE] == 'boolean':
             if self.value:
                 return 'true'
             else:

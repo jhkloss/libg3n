@@ -7,5 +7,5 @@ setup(name='libg3n',
       author='Jan Kloß',
       author_email='jan.kloss@fh-erfurt.de',
       license='MIT',
-      packages=['libg3n'],
+      packages=['libg3n', 'libg3n.exception', 'libg3n.model', 'libg3n.modules', 'libg3n.modules.python', 'libg3n.modules.java'],
       zip_safe=False)

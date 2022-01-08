@@ -1,8 +1,9 @@
 import os.path
 from abc import ABC, abstractmethod
-from enum import StrEnum
+from strenum import StrEnum
 import re
 
+import libg3n
 from libg3n.exception.InvalidFileException import InvalidFileException
 from libg3n.exception.InvalidParsingSyntaxException import InvalidParsingSyntaxException
 
@@ -45,10 +46,10 @@ class Libg3nRegexParser(ABC):
         """
         Prebuilds the annotation regex with use of the predefined parts.
         """
-        return self.regex_annotation_symbol + self.regex_annotation_name + '(' + self.regex_annotation_param_name + self.regex_spacer + '=' \
-               + self.regex_spacer + '"|\'' \
-               + self._add_regex_group(self.regex_annotation_param, self.GroupNames.IDENT) + '"|\'' \
-               + self.regex_spacer + ')'
+        return self.regex_annotation_symbol + self.regex_annotation_name + '\(' + self.regex_annotation_param_name + self.regex_spacer + '=' \
+               + self.regex_spacer + '("|\')' \
+               + self._add_regex_group(self.regex_annotation_param, self.GroupNames.IDENT) + '("|\')' \
+               + self.regex_spacer + '\)'
 
     @property
     @abstractmethod
@@ -67,7 +68,7 @@ class Libg3nRegexParser(ABC):
 
     @property
     def regex_body(self) -> str:
-        return r'{}'
+        return r'{(.*\n)*}'
 
     @property
     @abstractmethod
@@ -109,6 +110,9 @@ class Libg3nRegexParser(ABC):
         """
         Parses a specific file and produces a dict with all annotation matches.
         """
+
+        libg3n.logger.debug('Regex Parsing file: ' + file_path)
+
         if os.path.exists(file_path):
             with open(file_path) as f:
                 content = f.read()
@@ -121,12 +125,15 @@ class Libg3nRegexParser(ABC):
 
         if self.syntax_check(code):
             for match in re.finditer(self.regex_string, code):
+
+                libg3n.logger.debug('Found Regex match in line: ' + str(match.pos))
+
                 # Get regex group_dict for the match
                 match_groups = match.groupdict()
 
                 # Add positional metadata to the match
-                match_groups[self.GroupNames.LINE_START] = match.pos
-                match_groups[self.GroupNames.LINE_END] = match.endpos
+                match_groups[self.GroupNames.LINE_START] = match.start()
+                match_groups[self.GroupNames.LINE_END] = match.end()
 
                 # Save the result
                 result[match_groups[self.GroupNames.IDENT]] = match_groups

@@ -22,7 +22,7 @@ class Libg3nConfigParserG3n(Libg3nConfigParser):
     SYMBOLS = [':']
 
     NULLWORDS = [' ', '\n']
-    STOPWORDS = [':'] + NULLWORDS
+    STOPWORDS = SYMBOLS + NULLWORDS
     KEYWORDS = KEYWORDS_LEVEL1 + KEYWORDS_LEVEL2 + SYMBOLS
 
     _tokenized_config = None
@@ -135,9 +135,8 @@ class Libg3nConfigParserG3n(Libg3nConfigParser):
         valid = True
 
         # TODO: Rework
-
         if token[0] != self.CLASS_KEYWORD or \
-           (token[2] not in self.SYMBOLS and token[5] != self.PROPERTY_KEYWORD or token[2] != self.PROPERTY_KEYWORD):
+           (token[2] in self.SYMBOLS and token[4] != self.PROPERTY_KEYWORD):
             valid = False
 
         return valid

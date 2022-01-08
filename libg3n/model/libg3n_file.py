@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod, abstractproperty
 from os.path import exists, basename, splitext
 
+import libg3n
 from libg3n.model.libg3n_config import Libg3nConfig
 
 
 class Libg3nFile(ABC):
     _path: str
     _tree: any
-    _code: str
+    _code: str = ''
     _touched: bool = False
     _encoding: str = 'utf-8'
 
@@ -31,8 +32,12 @@ class Libg3nFile(ABC):
         self._tree = tree
 
     @property
-    def code(self):
+    def code(self) -> str:
         return self._code
+
+    @code.setter
+    def code(self, code: str):
+        self._code = code
 
     @property
     def encoding(self):
@@ -50,7 +55,7 @@ class Libg3nFile(ABC):
     @property
     def file_name(self):
         name_with_ext = basename(self._path)
-        return splitext(name_with_ext)
+        return splitext(name_with_ext)[0]
 
     def touch(self):
         self._touched = True
@@ -77,9 +82,12 @@ class Libg3nFile(ABC):
             with open(self._path, encoding=self._encoding) as f:
                 file_content = f.read()
 
+        self._code = file_content
         return file_content
 
     def write(self, file_path: str, file_name: str = "", encoding: str = ""):
+
+        libg3n.logger.debug('Writing file: ' + file_path + file_name + '.' + self.file_extension)
 
         if not encoding:
             encoding = self._encoding

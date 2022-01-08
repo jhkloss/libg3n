@@ -1,17 +1,16 @@
 import ast
 import libg3n
-import python_decorators
-from libg3n.modules.python.python_file import PythonFile
+import libg3n.modules.python.python_decorators as python_decorators
 
 
 class PythonFunctionVisitor(ast.NodeVisitor):
     __loaded_functions: dict
-    __current_file: PythonFile
+    __current_file : None
 
     def load_functions(self, functions: dict):
         self.__loaded_functions = functions
 
-    def set_current_file(self, file: PythonFile):
+    def set_current_file(self, file):
         self.__current_file = file
 
     def __get_function_by_ident(self, ident: str):
@@ -22,6 +21,9 @@ class PythonFunctionVisitor(ast.NodeVisitor):
             libg3n.logger.debug('Found matching config value for decorator id ' + ident)
             # Get the right function
             func = self.__loaded_functions[ident]
+        else:
+            libg3n.logger.debug('No matching function with ident ' + ident + ' found, skipping this decorator')
+
         return func
 
     def __refactor_function(self, ident, node) -> bool:
@@ -35,7 +37,7 @@ class PythonFunctionVisitor(ast.NodeVisitor):
             # TODO: AST Validation
             if function_body:
                 node.body = function_body
-                # Touch the file so we know it was altered and needs to be recompiled
+                # Touch the file, so we know it was altered and needs to be recompiled
                 self.__current_file.touch()
                 success = True
         return success

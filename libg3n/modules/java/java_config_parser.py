@@ -23,7 +23,7 @@ class JavaConfigParser(Libg3nConfigParserG3n):
     }
 
     def process_function(self, function_element) -> Libg3nFunction:
-        libg3n.logger.debug('Parse Java function from token: ' + function_element)
+        libg3n.logger.debug('Parse Java function from token: ' + str(function_element))
 
         id = function_element[1]
         type = function_element[3]
@@ -34,7 +34,7 @@ class JavaConfigParser(Libg3nConfigParserG3n):
         return JavaFunction(id, function_type, value)
 
     def process_class(self, class_element) -> Libg3nClass:
-        libg3n.logger.debug('Parse Java class from token: ' + class_element)
+        libg3n.logger.debug('Parse Java class from token: ' + str(class_element))
 
         new_class = JavaClass()
 
@@ -46,8 +46,8 @@ class JavaConfigParser(Libg3nConfigParserG3n):
         for i, token in enumerate(class_element):
             if token == self.PROPERTY_KEYWORD:
                 new_property = JavaProperty()
-                new_property.name = token[i + 1]
-                new_property.type = token[i + 3]
+                new_property.name = class_element[i + 1]
+                new_property.type = class_element[i + 3]
                 new_property.value = self.PROPERTY_TYPE_CONSTANTS[new_property.type]
                 new_class.add_property(new_property)
 
