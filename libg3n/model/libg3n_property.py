@@ -2,7 +2,14 @@ from abc import ABC, abstractmethod
 
 
 class Libg3nProperty(ABC):
+    """
+    Abstract class defining a Libg3n class property.
+    """
+
+    # Property name
     _name: str
+
+    # Property value
     _value: any
 
     @property

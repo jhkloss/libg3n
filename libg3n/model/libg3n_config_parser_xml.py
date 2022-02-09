@@ -12,6 +12,12 @@ class Libg3nXMLConfigParser(Libg3nConfigParser):
     # Current XML file tree
     _config_tree: et.ElementTree
 
+    # Function XML node name
+    CONFIG_FUNCTION_KEYWORD = 'func'
+
+    # Class XML node name
+    CONFIG_CLASS_KEYWORD = 'class'
+
     def parse(self, path: str) -> dict:
         # Load the XML file
         self._load_file(path)
@@ -28,12 +34,20 @@ class Libg3nXMLConfigParser(Libg3nConfigParser):
         return result
 
     def extract_config_tree(self):
+        """
+        Extracts an xml.etree.Elementtree from the given xml config file.
+        """
         self._config_tree = et.ElementTree(file=self._path)
 
     def get_functions(self):
+        """
+        Extracts and returns all functions from the Elementtree representing the xml config file.
+        """
         # We use the python hashtable (dict) to quickly access the right functions later
         function_dict = {}
-        functions = self._config_tree.findall('func')
+
+        # Find all function nodes inside the Elementtree
+        functions = self._config_tree.findall(self.CONFIG_FUNCTION_KEYWORD)
 
         libg3n.logger.debug('Found ' + str(len(functions)) + ' functions specified by the config file')
 
@@ -48,20 +62,27 @@ class Libg3nXMLConfigParser(Libg3nConfigParser):
         return function_dict
 
     def get_classes(self):
-
+        """
+        Extracts and returns all classes from the Elementtree representing the xml config file.
+        """
+        # We use the python hashtable (dict) to quickly access the right classes later
         classes_dict = {}
-        classes = self._config_tree.findall('class')
 
+        # Find all class nodes inside the Elementtree
+        classes = self._config_tree.findall(self.CONFIG_CLASS_KEYWORD)
+
+        # Iterate over the classes and turn them into Libg3n classes
         for current_class in classes:
             new_class = self.process_class(current_class)
             classes_dict[new_class.name] = new_class
 
         return classes_dict
 
-    # Dumps the parsed tree for debugging purposes.
     def dump_tree(self):
-
-        funcs = self._config_tree.findall('func')
+        """
+        Dumps the parsed tree for debugging purposes.
+        """
+        funcs = self._config_tree.findall(self.CONFIG_FUNCTION_KEYWORD)
 
         print('Functions'.center(40, '-'))
 
@@ -75,8 +96,14 @@ class Libg3nXMLConfigParser(Libg3nConfigParser):
 
     @abstractmethod
     def process_function(self, function_element) -> Libg3nFunction:
+        """
+        Abstract function which should implemented to map a config function element to a libg3n function.
+        """
         pass
 
     @abstractmethod
     def process_class(self, class_element) -> Libg3nClass:
+        """
+            Abstract function which should implemented to map a config class element to a libg3n class.
+        """
         pass

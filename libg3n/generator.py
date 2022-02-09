@@ -6,7 +6,14 @@ from libg3n.model.libg3n_config import Libg3nConfig
 # Singleton
 class Generator:
 
+    _instance = None
+
     _output_directory: str = "./generated/"
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super(Generator, cls).__new__(cls)
+        return cls._instance
 
     def generate(self, library: Libg3nLibrary, config: Libg3nConfig):
 
@@ -36,8 +43,6 @@ class Generator:
                 # Write the generated file
                 file.write(file_path=self._output_directory)
 
-                # TODO: Copy all other files -> could also be a frontend function
-
         # Build classes
         for current_class in config.classes.values():
             code = current_class.to_code()
@@ -46,6 +51,9 @@ class Generator:
             if code:
                 libg3n.logger.debug('Unparse class to: ' + self._output_directory + 'class_' + current_class.name)
                 self.write_file('class_' + current_class.name + '.py', code)
+
+    def set_output_directory(self, path: str):
+        self._output_directory = path
 
     def write_file(self, file_name: str, content: str):
         # Write the code back to python file

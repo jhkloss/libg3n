@@ -8,6 +8,7 @@ from libg3n.model.libg3n_config import Libg3nConfig
 class PythonFile(Libg3nFile):
 
     _visitor = PythonFunctionVisitor()
+    _tree: any
 
     @property
     def file_extension(self) -> str:

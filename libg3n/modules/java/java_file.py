@@ -35,6 +35,7 @@ class JavaFile(Libg3nFile):
                     # self._function_matches[config_function.ident] = {'function': function, 'config': config_function}
 
     def unparse(self) -> str:
+        # Reset the Offset in case we have to unparse multiple times
         self._offset = 0
 
         # Iterate over the matched functions
@@ -51,16 +52,16 @@ class JavaFile(Libg3nFile):
         return self.code
 
     def _insert_between(self, payload: str, start: int, end: int) -> str:
-
+        """
+        Inserts a string into a string considering the bounds specified by start / end. Mainly used to inject the
+        function specification into the sourcecode.
+        """
         # Preserve original length
         length = len(self.code)
 
         # Add offset to start and end positions
         start_index = start + self._offset
         end_index = end + self._offset
-
-        print(start_index)
-        print(end_index)
 
         # Insert the payload code
         result = self.code[:start_index] + payload + self.code[end_index:]

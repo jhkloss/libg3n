@@ -8,10 +8,15 @@ from libg3n.exception.InvalidFileException import InvalidFileException
 from libg3n.exception.InvalidParsingSyntaxException import InvalidParsingSyntaxException
 
 
-# TODO: Inherit from normal Config parser
 class Libg3nRegexParser(ABC):
+    """
+    Abstract Parser for parsing various programming languages ot extract functions and classes.
+    """
 
     class GroupNames(StrEnum):
+        """
+        Enum defining the RegEx group names for the important bits.
+        """
         NAME = 'name'
         IDENT = 'ident'
         PARAMETER = 'pram'
@@ -54,20 +59,33 @@ class Libg3nRegexParser(ABC):
     @property
     @abstractmethod
     def regex_modificator(self) -> str:
+        """
+        Abstract property defining the RegEx string to match function access modificators.
+        """
         pass
 
     @property
     @abstractmethod
     def regex_type(self) -> str:
+        """
+        Abstract property defining the RegEx string to match function return types.
+        """
         pass
 
     @property
     @abstractmethod
     def regex_sig(self) -> str:
+        """
+        Abstract property defining the RegEx string to match function signatures.
+        """
         pass
 
     @property
     def regex_body(self) -> str:
+        """
+        Property defining the RegEx String to match function bodies. Should be overwritten in case the specific
+        programming language uses another syntax.
+        """
         return r'{(.*\n)*}'
 
     @property
@@ -96,7 +114,12 @@ class Libg3nRegexParser(ABC):
 
     @staticmethod
     def glue_regex_token_list(token_list: list) -> str:
+        """
+        Glues multiple token to a regex list chained with logic or's.
+        """
         result = ''
+
+        # Get maximum length
         length = len(token_list) - 1
 
         for i, token in enumerate(token_list):
@@ -121,6 +144,9 @@ class Libg3nRegexParser(ABC):
             raise InvalidFileException()
 
     def parse_code(self, code: str) -> dict:
+        """
+        Parses the given code and matches functions and classes.
+        """
         result = {}
 
         if self.syntax_check(code):

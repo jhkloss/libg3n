@@ -3,8 +3,18 @@ from .libg3n_property import Libg3nProperty
 
 
 class Libg3nClass(ABC):
+    """
+    Abstract class describing the Libg3n class template. Implementing classes should implement the to_code function
+    regarding the language specification of the representing language module.
+    """
+
+    # The class name
     _name: str
+
+    # The name of the metaclass which this class should implement
     _meta_class: str
+
+    # List of class properties
     _properties = {}
 
     @property
@@ -28,9 +38,15 @@ class Libg3nClass(ABC):
         return self._properties
 
     def add_property(self, property: Libg3nProperty):
+        """
+        Adds the given property to the properties dict. The property name is used as a dict key.
+        """
         self._properties[property.name] = property
 
     def get_property(self, name: str):
+        """
+        Returns a property which matches the given property name.
+        """
         result = None
         if name in self._properties:
             result = self._properties[name]
@@ -38,4 +54,7 @@ class Libg3nClass(ABC):
 
     @abstractmethod
     def to_code(self):
+        """
+        Abstract function which turns the class metadata into an actual class specification.
+        """
         pass

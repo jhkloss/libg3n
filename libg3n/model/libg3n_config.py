@@ -5,8 +5,17 @@ from libg3n.model.libg3n_config_parser import Libg3nConfigParser
 
 
 class Libg3nConfig(ABC):
+    """
+    Represents a Libg3n config, providing the original config file path and the parsed functions and classes.
+    """
+
+    # Path to the config file
     _path: str
+
+    # Parsed functions
     _functions = {}
+
+    # Parsed classes
     _classes = {}
 
     def __init__(self, path):
@@ -31,4 +40,7 @@ class Libg3nConfig(ABC):
     @property
     @abstractmethod
     def parser(self) -> Libg3nConfigParser:
+        """
+        Abstract class defining the module / language specific config parser.
+        """
         pass

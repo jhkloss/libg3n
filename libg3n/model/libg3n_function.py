@@ -11,6 +11,9 @@ from enum import IntEnum, unique, auto
 
 @unique
 class FunctionType(IntEnum):
+    """
+    Enum representing all valid function types.
+    """
     RETURN = auto()
     CUSTOM = auto()
     EXTERNAL = auto()
@@ -18,8 +21,17 @@ class FunctionType(IntEnum):
 
 
 class Libg3nFunction(ABC):
+    """
+    Abstract Class representing a parsed libg3n function.
+    """
+
+    # Identificator used for matching this function
     _ident: str
+
+    # Function type
     _function_type: FunctionType
+
+    # Function value / path
     _value: any
 
     def __init__(self, ident: str, function_type: FunctionType, value: any):
@@ -52,11 +64,15 @@ class Libg3nFunction(ABC):
         self._value = value
 
     def generate_body(self) -> str:
+        """
+        Generates the function body for this function using the metadata stored inside the class variables.
+        """
         result = ""
-        # Return the matching function body according to the type
-        # TODO: Replace with match-case statement, once upgraded to python 3.10
+
         libg3n.logger.debug('Generating ' + str(self._function_type) + ' function body for ' + str(self._ident))
 
+        # Return the matching function body according to the type
+        # TODO: Replace with match-case statement, once upgraded to python 3.10
         if self._function_type == FunctionType.RETURN:
             result = self._return_function_body()
         elif self._function_type == FunctionType.CUSTOM:
@@ -68,12 +84,21 @@ class Libg3nFunction(ABC):
 
     @abstractmethod
     def _return_function_body(self) -> any:
+        """
+        Generates and returns a return function body.
+        """
         pass
 
     @abstractmethod
     def _custom_function_body(self) -> any:
+        """
+        Generates and returns a custom function body.
+        """
         pass
 
     @abstractmethod
     def _external_function_body(self) -> any:
+        """
+            Generates and returns an external defined function body.
+        """
         pass

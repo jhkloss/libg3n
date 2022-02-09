@@ -6,7 +6,7 @@ from libg3n.modules.python.python_property import PythonProperty
 from libg3n.modules.python.python_class import PythonClass
 
 
-class PythonConfigParser(Libg3nXMLConfigParser):
+class PythonXMLConfigParser(Libg3nXMLConfigParser):
 
     PROPERTY_TYPE_CONSTANTS = {
         'str': '',

@@ -5,8 +5,17 @@ from .libg3n_file import Libg3nFile
 
 
 class Libg3nLibrary(ABC):
-    _files = []
+    """
+    Abstract class representing an Libg3n library. Encapsulate functions to find and manage library files.
+    """
+
+    # Path pointing to the library root
     _path: str
+
+    # List of found files
+    _files = []
+
+    # Number of files found
     _number_of_files: int = 0
 
     def __init__(self, path: str):
@@ -31,6 +40,9 @@ class Libg3nLibrary(ABC):
     @property
     @abstractmethod
     def file_extension(self):
+        """
+        Abstract property defining the file extension for library files.
+        """
         pass
 
     @abstractmethod
@@ -38,6 +50,9 @@ class Libg3nLibrary(ABC):
         pass
 
     def scan(self):
+        """
+        Scans the library for files matching the file extension for library files.
+        """
         libg3n.logger.debug('Started library scan')
         for file in glob.iglob(self._path + '/**/*.' + self.file_extension, recursive=True):
             current_file = self.index_file(file)

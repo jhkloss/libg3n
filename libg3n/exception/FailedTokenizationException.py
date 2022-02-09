@@ -1,0 +1,2 @@
+class FailedTokenizationexception(Exception):
+    pass

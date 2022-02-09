@@ -55,7 +55,6 @@ class PythonFunctionVisitor(ast.NodeVisitor):
                         'Found libg3n decorator in ' + self.__current_file.path + ' in line ' + str(node.lineno - 1))
 
                     # Get and validate the ident arg
-                    # TODO: Outsource to helper.py
                     if isinstance(decorator.args[0], ast.Constant):
                         ident = decorator.args[0].__getattribute__('value')
 
@@ -78,7 +77,6 @@ class PythonFunctionVisitor(ast.NodeVisitor):
     @staticmethod
     def _is_libg3n_decorator(identifier: str):
         found = False
-        # TODO: Make this dynamic
         if identifier == python_decorators.generate.__name__:
             found = True
 
