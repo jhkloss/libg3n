@@ -6,6 +6,10 @@ from libg3n.modules.python.python_codegen import to_source
 
 class PythonClass(Libg3nClass):
 
+    @property
+    def file_extension(self) -> str:
+        return 'py'
+
     def glue_properties(self):
         result = []
         for property in self._properties.values():
@@ -21,6 +25,6 @@ class PythonClass(Libg3nClass):
         class_definition.body = self.glue_properties()
         return ast.Module(body=[class_definition])
 
-    def to_code(self):
+    def to_code(self) -> str:
         class_ast = self.to_ast()
         return to_source(class_ast)

@@ -1,4 +1,6 @@
 import glob
+import os
+
 import libg3n
 from abc import ABC, abstractmethod
 from .libg3n_file import Libg3nFile
@@ -49,12 +51,18 @@ class Libg3nLibrary(ABC):
     def index_file(self, path: str) -> Libg3nFile:
         pass
 
+    @staticmethod
+    def _is_empty(file: str) -> bool:
+        return os.stat(file).st_size == 0
+
     def scan(self):
         """
         Scans the library for files matching the file extension for library files.
         """
         libg3n.logger.debug('Started library scan')
         for file in glob.iglob(self._path + '/**/*.' + self.file_extension, recursive=True):
-            current_file = self.index_file(file)
-            self._files.append(current_file)
-            self._number_of_files += 1
+            # Filter empty files
+            if not self._is_empty(file):
+                current_file = self.index_file(file)
+                self._files.append(current_file)
+                self._number_of_files += 1

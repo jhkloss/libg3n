@@ -28,7 +28,7 @@ class PythonConfigParser(Libg3nConfigParserG3n):
 
         new_class = PythonClass()
 
-        new_class.name = class_element[0]
+        new_class.name = class_element[1]
 
         if class_element[2] in self.SYMBOLS:
             new_class.meta_class = class_element[3]
@@ -36,8 +36,8 @@ class PythonConfigParser(Libg3nConfigParserG3n):
         for i, token in enumerate(class_element):
             if token == self.PROPERTY_KEYWORD:
                 new_property = PythonProperty()
-                new_property.name = token[i + 1]
-                new_property.type = token[i + 3]
+                new_property.name = class_element[i + 1]
+                new_property.type = class_element[i + 3]
                 new_property.value = self.PROPERTY_TYPE_CONSTANTS[new_property.type]
                 new_class.add_property(new_property)
 

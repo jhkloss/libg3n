@@ -2,7 +2,7 @@ import logging
 
 from libg3n.modules.python.python_decorators import generate
 from libg3n.modules.python.python_codegen import to_source
-from .generator import Generator
+from .generator import Generator, GeneratorConfigKeys
 
 # Configure the Logger
 logger = logging.getLogger('libg3n_logger')

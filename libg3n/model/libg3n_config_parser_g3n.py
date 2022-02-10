@@ -26,11 +26,14 @@ class Libg3nConfigParserG3n(Libg3nConfigParser):
 
     # Symbols
     SYMBOLS = [':']
-    NULLWORDS = [' ', '\n']
+    NULLWORDS = [' ', '\n', '\t']
     STOPWORDS = SYMBOLS + NULLWORDS
 
+    # String Delimiters
+    STRING_DELIMITERS = ['"', '\'']
+
     # Join Keywords
-    KEYWORDS = KEYWORDS_LEVEL1 + KEYWORDS_LEVEL2 + SYMBOLS
+    KEYWORDS = KEYWORDS_LEVEL1 + KEYWORDS_LEVEL2
 
     # Config token
     _tokenized_config = None
@@ -80,27 +83,61 @@ class Libg3nConfigParserG3n(Libg3nConfigParser):
         result = []
 
         # Determine maximum index so we dont overstep the content bounds
-        max_length = len(content) - 1
+        max_length = len(content) - 2
+
+        # Determine if we currently lexing a String
+        in_string = False
 
         # Iterate over all chars in the config
         for i, char in enumerate(content):
 
-            # In case we found a keyword with the lex
-            if lex in self.KEYWORDS:
-                result.append(lex)
-                lex = ''
+            if i != max_length and char not in self.STOPWORDS:
 
-            # Append char in case it's not a nullword
-            if char not in self.NULLWORDS:
-                lex += char
+                # Continue Lexing -----
 
-            # Stop in case we reach the end of line / file and save the lex
-            if i == max_length or content[i + 1] in self.STOPWORDS:
+                # Append char in case it's not a nullword
+                if char not in self.NULLWORDS and char not in self.STRING_DELIMITERS:
+                    lex += char
+
+                # String Handling -----
+
+                if char in self.STRING_DELIMITERS:
+                    if in_string:
+                        in_string = False
+                        result.append(lex)
+                        lex = ''
+                        continue
+                    else:
+                        in_string = True
+                        lex = ''
+                        continue
+
+                if in_string:
+                    continue
+
+                # Keyword Handling -----
+
+                # In case we found a valid keyword with the lex
+                if self._is_valid_keyword(lex, content[i + 1]):
+                    result.append(lex)
+                    lex = ''
+
+            else:
+
                 if lex:
                     result.append(lex)
                     lex = ''
 
+                if char in self.SYMBOLS:
+                    result.append(char)
+
         return result
+
+    def _is_valid_keyword(self, string: str, successor: str) -> bool:
+        """
+        Returns true in case the given String is a valid keyword.
+        """
+        return (string in self.KEYWORDS and successor in self.STOPWORDS) or (string in self.SYMBOLS)
 
     def split_token_array(self, token_array: list) -> list:
         """
@@ -113,7 +150,7 @@ class Libg3nConfigParserG3n(Libg3nConfigParser):
         # Current syntax part
         part = []
 
-        # Determine maximum index so we dont overstep array bounds
+        # Determine maximum index so we don't overstep array bounds
         length = len(token_array) - 1
 
         # Iterate over all token
@@ -139,9 +176,8 @@ class Libg3nConfigParserG3n(Libg3nConfigParser):
         """
         Parses a single token into a function / class.
         """
-        result = None
 
-        # Dertermine if the token is a (valid) function / class
+        # Determine if the token is a (valid) function / class
         if self.is_function_token(token) and self.validate_function_token(token):
             result = self.process_function(token)
             self._functions[result.ident] = result

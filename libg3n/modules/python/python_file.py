@@ -6,7 +6,6 @@ from libg3n.model.libg3n_config import Libg3nConfig
 
 
 class PythonFile(Libg3nFile):
-
     _visitor = PythonFunctionVisitor()
     _tree: any
 
@@ -24,6 +23,7 @@ class PythonFile(Libg3nFile):
             return ast_tree
 
     def process(self, config: Libg3nConfig):
+
         # Load ast Visitor with current file
         self._visitor.set_current_file(self)
 

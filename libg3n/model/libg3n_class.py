@@ -1,3 +1,5 @@
+import libg3n
+
 from abc import ABC, abstractmethod
 from .libg3n_property import Libg3nProperty
 
@@ -9,10 +11,10 @@ class Libg3nClass(ABC):
     """
 
     # The class name
-    _name: str
+    _name: str = ""
 
     # The name of the metaclass which this class should implement
-    _meta_class: str
+    _meta_class: str = ""
 
     # List of class properties
     _properties = {}
@@ -37,6 +39,14 @@ class Libg3nClass(ABC):
     def properties(self):
         return self._properties
 
+    @property
+    @abstractmethod
+    def file_extension(self) -> str:
+        """
+        Abstract property. File extension of the file.
+        """
+        pass
+
     def add_property(self, property: Libg3nProperty):
         """
         Adds the given property to the properties dict. The property name is used as a dict key.
@@ -53,8 +63,28 @@ class Libg3nClass(ABC):
         return result
 
     @abstractmethod
-    def to_code(self):
+    def to_code(self) -> str:
         """
         Abstract function which turns the class metadata into an actual class specification.
         """
         pass
+
+    def write(self, class_path: str = '', class_name: str = '', class_prefix: str = '', encoding: str = 'utf-8'):
+        """
+        Writes the class to a file
+        """
+
+        if not class_name:
+            class_name = self._name
+
+        result_path = class_path + class_prefix + class_name + '.' + self.file_extension
+
+        libg3n.logger.debug('Writing class: ' + result_path)
+
+        code = self.to_code()
+
+        # Make sure the sourcecode is valid before it is written
+        if code:
+            # Write the sourcecode to a new file.
+            with open(result_path, 'w', encoding=encoding) as f:
+                f.write(code)
