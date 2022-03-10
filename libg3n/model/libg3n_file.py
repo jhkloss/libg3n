@@ -109,9 +109,9 @@ class Libg3nFile(ABC):
                     self._code = file_content
                     return file_content
                 else:
-                    raise EmptyFileException()
+                    raise EmptyFileException(self._path)
         else:
-            raise InvalidFileException()
+            raise InvalidFileException(self._path)
 
 
 def write(self, file_path: str, file_name: str = "", encoding: str = ""):

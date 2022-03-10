@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from os.path import exists
 
 from libg3n.model.libg3n_function import FunctionType
+from libg3n.exception.InvalidFileException import InvalidFileException
 
 
 class Libg3nConfigParser(ABC):
@@ -38,6 +39,8 @@ class Libg3nConfigParser(ABC):
         if exists(path):
             with open(path) as f:
                 self._config = f.read()
+        else:
+            raise InvalidFileException(path, "Configuration")
 
     def _parse_function_type(self, function_type_str: str) -> FunctionType:
         """

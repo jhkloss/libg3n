@@ -71,16 +71,19 @@ class Libg3nClass(ABC):
 
     def write(self, class_path: str = '', class_name: str = '', class_prefix: str = '', encoding: str = 'utf-8'):
         """
-        Writes the class to a file
+        Writes the class to a file.
         """
 
+        # If there is no class name specified, use the Ident instead
         if not class_name:
             class_name = self._name
 
+        # Construct the resulting path
         result_path = class_path + class_prefix + class_name + '.' + self.file_extension
 
         libg3n.logger.debug('Writing class: ' + result_path)
 
+        # Generate the class code
         code = self.to_code()
 
         # Make sure the sourcecode is valid before it is written

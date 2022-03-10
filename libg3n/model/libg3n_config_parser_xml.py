@@ -72,8 +72,8 @@ class Libg3nXMLConfigParser(Libg3nConfigParser):
         classes = self._config_tree.findall(self.CONFIG_CLASS_KEYWORD)
 
         # Iterate over the classes and turn them into Libg3n classes
-        for current_class in classes:
-            new_class = self.process_class(current_class)
+        for cls in classes:
+            new_class = self.process_class(cls)
             classes_dict[new_class.name] = new_class
 
         return classes_dict

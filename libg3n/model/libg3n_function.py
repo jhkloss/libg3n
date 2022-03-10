@@ -25,7 +25,7 @@ class Libg3nFunction(ABC):
     Abstract Class representing a parsed libg3n function.
     """
 
-    # Identificator used for matching this function
+    # Ident used for matching this function
     _ident: str
 
     # Function type

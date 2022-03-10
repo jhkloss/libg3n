@@ -2,6 +2,7 @@ import glob
 import os
 
 import libg3n
+from libg3n.exception.EmptyFileException import EmptyFileException
 from abc import ABC, abstractmethod
 from .libg3n_file import Libg3nFile
 
@@ -66,3 +67,5 @@ class Libg3nLibrary(ABC):
                 current_file = self.index_file(file)
                 self._files.append(current_file)
                 self._number_of_files += 1
+            else:
+                raise EmptyFileException(file)

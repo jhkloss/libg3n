@@ -1,21 +1,29 @@
 import os
-
 from strenum import StrEnum
 from enum import auto
 
 import libg3n
 from libg3n.model.libg3n_library import Libg3nLibrary
 from libg3n.model.libg3n_config import Libg3nConfig
+from libg3n.exception.EmptyLibraryException import EmptyLibraryException
 
 
 class GeneratorConfigKeys(StrEnum):
-    OUTPUT_DIR = auto()
-    CLASS_SUBFOLDER = auto()
-    CLASS_PREFIX = auto()
-    SKIP_FUNCTIONS = auto()
+    """
+    Defines the keys for a configuration dictionary.
+    """
+
+    OUTPUT_DIR = auto()  # Root Output dictionary
+    CLASS_SUBFOLDER = auto()  # Optional subfolder for generated classes
+    CLASS_PREFIX = auto()  # Optional prefix for generated classes
+    SKIP_FUNCTIONS = auto()  # Skip functions in case only classes are generated
 
 
 class Generator:
+    """
+    Generator class which encapsulates the Libg3n generation logic. By using a Dict in combination with
+    the GeneratorConfigKey Enum a custom configuration can be passed with the function load_config().
+    """
 
     # Singleton instance
     _instance = None
@@ -23,10 +31,13 @@ class Generator:
     # Config Values
     _output_directory: str = './generated/'
 
+    # Optional class subfolder
     _class_subfolder: str = ''
 
+    # Optional class prefix
     _class_prefix: str = ''
 
+    # Skip function generation
     _skip_functions: bool = False
 
     def __new__(cls, *args, **kwargs):
@@ -35,7 +46,9 @@ class Generator:
         return cls._instance
 
     def generate(self, library: Libg3nLibrary, config: Libg3nConfig):
-
+        """
+        Generates the variable library files by using a Library and a Config Object.
+        """
         libg3n.logger.debug('Initiated library generation from ' + library.path)
 
         # Perform the library scan
@@ -43,38 +56,46 @@ class Generator:
 
         libg3n.logger.debug('Found ' + str(library.number_of_files) + ' matching files in the library')
 
-        # In case the functions are not skipped by the configuration
-        if not self._skip_functions:
+        # Continue in case we found matching files in the library
+        if library.number_of_files > 0:
 
-            # Traverse through library files
-            for file in library.files:
+            # In case the functions are not skipped by the configuration
+            if not self._skip_functions:
 
-                libg3n.logger.debug('Processing File: ' + file.path)
+                # Traverse through library files
+                for file in library.files:
 
-                # Parse file to AST
-                file.parse()
+                    libg3n.logger.debug('Processing File: ' + file.path)
 
-                file.process(config)
+                    # Parse file to AST
+                    file.parse()
 
-                if file.touched():
+                    file.process(config)
 
-                    libg3n.logger.debug('File ' + file.path + ' was altered!')
-                    # Unparse the AST back to python code
-                    file.unparse()
+                    # Only continue in case file was altered and needs to be written
+                    if file.touched():
+                        libg3n.logger.debug('File ' + file.path + ' was altered!')
 
-                    # Write the generated file
-                    file.write(file_path=self._output_directory)
+                        # Unparse the AST back to python code
+                        file.unparse()
+
+                        # Write the generated file
+                        file.write(file_path=self._output_directory)
+            else:
+                libg3n.logger.debug('Skipping function generation as specified in the configuration.')
         else:
-            libg3n.logger.debug('Skipping function generation as specified in the configuration.')
+            raise EmptyLibraryException(library)
 
         # Get class output path and create it in case it doesn't exist
         class_output_path = self._output_directory + '/' + self._class_subfolder + '/'
 
+        # Check if class path (including optional subfolders) exist, create a dir otherwise
         if not os.path.isdir(class_output_path):
             os.mkdir(class_output_path)
 
-        # Build classes
+        # Iterate over classes
         for cls in config.classes.values():
+            # Write class to file
             cls.write(class_path=class_output_path, class_prefix=self._class_prefix)
 
     def set_output_directory(self, path: str):
@@ -85,7 +106,7 @@ class Generator:
 
     def load_config(self, config_dict: dict):
         """
-        Loads a Config dictionary to quickly configure the Generator
+        Loads a Config dictionary to quickly configure the Generator.
         """
         if GeneratorConfigKeys.OUTPUT_DIR in config_dict:
             self._output_directory = config_dict[GeneratorConfigKeys.OUTPUT_DIR]
@@ -100,7 +121,9 @@ class Generator:
             self._skip_functions = config_dict[GeneratorConfigKeys.SKIP_FUNCTIONS]
 
     def write_file(self, file_name: str, content: str):
-        # Write the code back to python file
+        """
+        Writes the contents back to a file.
+        """
 
         libg3n.logger.debug('Writing file to: ' + self._output_directory + file_name)
         with open(self._output_directory + file_name, 'w', encoding='utf-8') as f:

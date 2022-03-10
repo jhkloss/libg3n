@@ -51,25 +51,38 @@ class Libg3nConfigParserG3n(Libg3nConfigParser):
     _classes = {}
 
     def parse(self, path) -> dict:
+        """
+        Parses the config file and produces a dictionary of Libg3n functions and classes.
+        """
+        # Read the config file
         self._load_file(path)
 
+        # If config was correctly loaded
         if self._config:
+
+            # Tokenize the config contents
             self._tokenized_config = self.tokenize(self._config)
 
+            # If tokenization was successful
             if self._tokenized_config:
+
+                # Split Token into array
                 self._token_array = self.split_token_array(self._tokenized_config)
 
+                # If token array was created
                 if self._token_array:
 
+                    # Iterate over all token
                     for token in self._token_array:
+
+                        # Parse the token
                         self.parse_token(token)
 
                     return {self.FUNCTION_DICT_KEY: self._functions, self.CLASS_DICT_KEY: self._classes}
-
             else:
-                raise FailedTokenizationexception
+                raise FailedTokenizationexception()
         else:
-            raise EmptyFileException
+            raise EmptyFileException(path)
 
     def tokenize(self, content: str) -> list:
         """

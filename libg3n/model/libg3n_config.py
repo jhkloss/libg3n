@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-import libg3n
 from libg3n.model.libg3n_config_parser import Libg3nConfigParser
 
 
@@ -31,10 +30,16 @@ class Libg3nConfig(ABC):
 
     @property
     def functions(self):
+        """
+        Returns all configured functions representing variation points.
+        """
         return self._functions
 
     @property
     def classes(self):
+        """
+        Returns all configured classes.
+        """
         return self._classes
 
     @property

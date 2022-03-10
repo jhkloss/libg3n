@@ -1,9 +1,8 @@
 import os.path
+import re
+import libg3n
 from abc import ABC, abstractmethod
 from strenum import StrEnum
-import re
-
-import libg3n
 from libg3n.exception.InvalidFileException import InvalidFileException
 from libg3n.exception.InvalidParsingSyntaxException import InvalidParsingSyntaxException
 
@@ -136,12 +135,14 @@ class Libg3nRegexParser(ABC):
 
         libg3n.logger.debug('Regex Parsing file: ' + file_path)
 
+        # If file exists
         if os.path.exists(file_path):
+            # Open and read file contents
             with open(file_path) as f:
                 content = f.read()
                 return self.parse_code(content)
         else:
-            raise InvalidFileException()
+            raise InvalidFileException(file_path, "Source")
 
     def parse_code(self, code: str) -> dict:
         """
