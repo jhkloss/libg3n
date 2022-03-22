@@ -68,4 +68,5 @@ class Libg3nLibrary(ABC):
                 self._files.append(current_file)
                 self._number_of_files += 1
             else:
-                raise EmptyFileException(file)
+                pass
+                # raise EmptyFileException(file) TODO:Rework

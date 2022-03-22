@@ -1,6 +1,9 @@
 import os
+import shutil
+
 from strenum import StrEnum
 from enum import auto
+from distutils.dir_util import copy_tree
 
 import libg3n
 from libg3n.model.libg3n_library import Libg3nLibrary
@@ -13,10 +16,11 @@ class GeneratorConfigKeys(StrEnum):
     Defines the keys for a configuration dictionary.
     """
 
-    OUTPUT_DIR = auto()  # Root Output dictionary
-    CLASS_SUBFOLDER = auto()  # Optional subfolder for generated classes
-    CLASS_PREFIX = auto()  # Optional prefix for generated classes
-    SKIP_FUNCTIONS = auto()  # Skip functions in case only classes are generated
+    OUTPUT_DIR = auto()         # Root Output dictionary
+    CLASS_SUBFOLDER = auto()    # Optional subfolder for generated classes
+    CLASS_PREFIX = auto()       # Optional prefix for generated classes
+    SKIP_FUNCTIONS = auto()     # Skip functions in case only classes are generated
+    COPY_LIBRARY_FILES = auto() # Copy all unmodified library files
 
 
 class Generator:
@@ -40,6 +44,9 @@ class Generator:
     # Skip function generation
     _skip_functions: bool = False
 
+    # Copy all unmodified library files
+    _copy_library_files: bool = False
+
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
             cls._instance = super(Generator, cls).__new__(cls)
@@ -50,6 +57,10 @@ class Generator:
         Generates the variable library files by using a Library and a Config Object.
         """
         libg3n.logger.debug('Initiated library generation from ' + library.path)
+
+        # Copy library
+        if self._copy_library_files:
+            copy_tree(library.path, self._output_directory)
 
         # Perform the library scan
         library.scan()
@@ -81,6 +92,7 @@ class Generator:
 
                         # Write the generated file
                         file.write(file_path=self._output_directory)
+
             else:
                 libg3n.logger.debug('Skipping function generation as specified in the configuration.')
         else:
@@ -119,6 +131,9 @@ class Generator:
 
         if GeneratorConfigKeys.SKIP_FUNCTIONS in config_dict:
             self._skip_functions = config_dict[GeneratorConfigKeys.SKIP_FUNCTIONS]
+
+        if GeneratorConfigKeys.COPY_LIBRARY_FILES in config_dict:
+            self._copy_library_files = config_dict[GeneratorConfigKeys.COPY_LIBRARY_FILES]
 
     def write_file(self, file_name: str, content: str):
         """
